@@ -1,1059 +1,869 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Калькулятор каркасных домов — Эко Каркас</title>
+  <meta charset="utf-8" />
+  <title>EcoCarcass2026 — Калькулятор дома | Эко Каркас</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #f3f7f3;
-      --card-bg: #ffffff;
-      --accent: #7ed957;       /* салатовый */
-      --accent-soft: #e5f9dd;
-      --accent-dark: #4ca62c;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #dc2626;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-    }
-
-    body {
-      background: radial-gradient(circle at top, #f0fff4 0%, #f3f7f3 40%, #eef2ff 100%);
-      color: var(--text-main);
-      padding: 20px;
-    }
-
-    .app {
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .logo-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 30% 20%, #ffffff 0, #b8f2a4 30%, #4ca62c 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #0f172a;
-      font-size: 20px;
-      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3);
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .header-title {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .header-title h1 {
-      font-size: 20px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .header-title span {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .header-tag {
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: rgba(126, 217, 87, 0.12);
-      color: var(--accent-dark);
-      border: 1px solid rgba(126, 217, 87, 0.45);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .header-tag-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-      gap: 22px;
-    }
-
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      box-shadow: 0 14px 44px rgba(15, 23, 42, 0.08);
-      padding: 18px 18px 20px;
-    }
-
-    .steps-header {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .steps-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .steps-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .steps-progress {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .progress-bar {
-      flex: 1;
-      height: 6px;
-      border-radius: 999px;
-      background: #e5f0e3;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent), #bef264, var(--accent-dark));
-      transition: width 0.25s ease;
-    }
-
-    .progress-text {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .step {
-      display: none;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    .step-label {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .step-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-    }
-
-    .option-card {
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 10px 11px;
-      background: #f9fafb;
-      cursor: pointer;
-      position: relative;
-      transition: 0.18s ease;
-    }
-
-    .option-card.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .option-card:hover:not(.disabled) {
-      border-color: var(--accent);
-      box-shadow: 0 6px 18px rgba(74, 222, 128, 0.26);
-      transform: translateY(-1px);
-    }
-
-    .option-card.active {
-      background: var(--accent-soft);
-      border-color: var(--accent-dark);
-      box-shadow: 0 8px 20px rgba(74, 222, 128, 0.4);
-    }
-
-    .option-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .option-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .option-chip {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 10px;
-      padding: 3px 6px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: #4b5563;
-    }
-
-    .option-chip.green {
-      border-color: rgba(34, 197, 94, 0.8);
-      color: #166534;
-    }
-
-    .field {
-      margin-top: 10px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-      color: #374151;
-    }
-
-    .field input[type="number"] {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      font-size: 14px;
-      background: #f9fafb;
-    }
-
-    .field input[type="number"]:focus {
-      outline: none;
-      border-color: var(--accent-dark);
-      box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.4);
-      background: #ffffff;
-    }
-
-    .hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
-
-    .packages {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .pkg {
-      border-radius: 999px;
-      padding: 6px 11px;
-      font-size: 12px;
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.15s ease;
-    }
-
-    .pkg.active {
-      border-color: var(--accent-dark);
-      background: var(--accent-soft);
-      color: #14532d;
-    }
-
-    .pkg-badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(15, 118, 110, 0.05);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: #0f766e;
-    }
-
-    .nav-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .nav-left,
-    .nav-right {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border-radius: 999px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: #ffffff;
-      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.03);
-      transform: translateY(-0.5px);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px dashed var(--border);
-      color: var(--text-muted);
-    }
-
-    .btn-ghost:hover {
-      border-style: solid;
-      color: #111827;
-    }
-
-    .btn[disabled] {
-      opacity: 0.5;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .error {
-      font-size: 11px;
-      color: var(--danger);
-      margin-top: 4px;
-    }
-
-    /* Правая колонка — результат */
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .result-logo {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .result-badge {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #ecfdf3;
-      color: #166534;
-      border: 1px solid rgba(74, 222, 128, 0.6);
-    }
-
-    .result-main {
-      margin: 6px 0 10px;
-    }
-
-    .result-total {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .result-perm2 {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .result-row span:last-child {
-      font-weight: 600;
-    }
-
-    .result-meta {
-      border-top: 1px dashed var(--border);
-      margin-top: 10px;
-      padding-top: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .pill-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .pill {
-      font-size: 10px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #f3f4f6;
-      color: #4b5563;
-    }
-
-    .pill.green {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .result-footer {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px dashed var(--border);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .result-footer strong {
-      color: #111827;
-    }
+    :root{
+      --card:#fff;--accent:#7ed957;--accent2:#39b54a;
+      --soft:#e9fbe1;--text:#0f172a;--muted:#64748b;
+      --border:#e6ebef;--shadow:0 18px 48px rgba(2,6,23,.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+    body{
+      background:
+        radial-gradient(1200px 500px at 20% -10%, #eaffea 0%, rgba(234,255,234,0) 60%),
+        radial-gradient(900px 400px at 90% 10%, #e8fff1 0%, rgba(232,255,241,0) 55%),
+        linear-gradient(180deg, #f7fff8 0%, #f3fbf3 70%, #f4f8ff 100%);
+      color:var(--text);padding:20px;
+    }
+    .app{max-width:1200px;margin:0 auto;}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:center;gap:12px;}
+    .mark{
+      width:46px;height:46px;border-radius:16px;
+      background:radial-gradient(circle at 30% 20%, #fff 0, #c9f7b6 35%, #2ea043 100%);
+      box-shadow:0 12px 28px rgba(46,160,67,.28);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;letter-spacing:.04em;color:#0b1220;font-size:18px;
+    }
+    h1{font-size:22px;letter-spacing:.02em;text-transform:uppercase;font-weight:900;}
+    .sub{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.35;}
+    .tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(126,217,87,.14);border:1px solid rgba(126,217,87,.5);color:#166534;font-weight:900;font-size:12px;white-space:nowrap;}
+    .dot{width:8px;height:8px;border-radius:999px;background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.22);}
+    .grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;}
+    @media(max-width:980px){.grid{grid-template-columns:1fr;}}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:18px;}
+    .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px;}
+    .title{font-size:18px;font-weight:900;}
+    .desc{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35;}
+
+    .progress{display:flex;align-items:center;gap:10px;margin-top:10px;}
+    .bar{flex:1;height:8px;background:#eaf6ea;border-radius:999px;overflow:hidden;}
+    .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#b7f26f,var(--accent2));border-radius:999px;transition:.2s;}
+    .ptext{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+    .step{display:none;}
+    .step.active{display:block;}
+    .kicker{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+    .stitle{font-size:16px;font-weight:900;margin-bottom:10px;}
+
+    .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;}
+    .opt{border:1px solid var(--border);border-radius:16px;background:#f9fbff;padding:12px;cursor:pointer;position:relative;transition:.15s;min-height:78px;}
+    .opt:hover{border-color:rgba(57,181,74,.55);box-shadow:0 10px 24px rgba(34,197,94,.18);transform:translateY(-1px);}
+    .opt.active{background:var(--soft);border-color:rgba(22,101,52,.55);box-shadow:0 12px 26px rgba(34,197,94,.24);}
+    .opt .t{font-weight:900;font-size:14px;margin-bottom:4px;}
+    .opt .s{font-size:12px;color:var(--muted);line-height:1.25;}
+    .chip{position:absolute;top:10px;right:10px;font-size:11px;font-weight:900;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.9);border:1px solid rgba(148,163,184,.55);color:#475569;}
+    .chip.green{border-color:rgba(34,197,94,.6);color:#166534;background:#effef4;}
+    .chip.premium{border-color:rgba(251,191,36,.65);color:#92400e;background:#fffbeb;}
+
+    .field{margin-top:12px;}
+    label{display:block;font-size:13px;font-weight:900;color:#334155;margin-bottom:6px;}
+    input[type="number"], select{
+      width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);
+      background:#f8fafc;font-size:14px;outline:none;
+    }
+    input[type="number"]:focus, select:focus{border-color:rgba(57,181,74,.55);box-shadow:0 0 0 3px rgba(126,217,87,.18);background:#fff;}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.3;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:560px){.row2{grid-template-columns:1fr;}}
+
+    .checks{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px;}
+    .check{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:#fbfdff;}
+    .check input{margin-top:3px;accent-color:var(--accent2);}
+    .check .ct{font-weight:900;font-size:13px;}
+    .check .cs{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.2;}
+
+    .nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap;}
+    .btn{border:none;border-radius:999px;padding:10px 16px;font-weight:900;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+    .ghost{background:transparent;border:1px dashed var(--border);color:var(--muted);}
+    .ghost:hover{border-style:solid;color:#0f172a;}
+    .primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 12px 28px rgba(34,197,94,.25);}
+    .primary:disabled{opacity:.5;cursor:default;box-shadow:none;}
+    .mini{padding:8px 12px;font-size:12px;font-weight:900;}
+
+    .danger{color:#b91c1c;font-size:12px;font-weight:900;margin-top:6px;display:none;}
+
+    .rhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+    .rbrand{font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:14px;}
+    .total{font-size:28px;font-weight:900;margin:10px 0 2px;}
+    .perm2{font-size:13px;color:var(--muted);}
+
+    .line{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;}
+    .line b{font-weight:900;}
+    .sep{border-top:1px dashed var(--border);margin:12px 0;}
+    .footer-note{font-size:12px;color:var(--muted);line-height:1.35;}
+
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid rgba(34,197,94,.35);background:#dcfce7;color:#166534;font-weight:900;font-size:12px;}
+    .pills{display:flex;flex-wrap:wrap;gap:6px;}
+    .pill{font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;background:#f1f5f9;color:#334155;}
+    .pill.green{background:#dcfce7;color:#166534;border:1px solid rgba(34,197,94,.35);}
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="header-left">
-        <div class="logo-mark">ЭК</div>
-        <div class="header-title">
-          <h1>Эко Каркас</h1>
-          <span>Строим каркасные дома, которые заботятся о природе и вашем уюте</span>
-        </div>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="mark">ЭК</div>
+      <div>
+        <h1>Эко Каркас</h1>
+        <div class="sub" id="foundationHeader">Фундамент: (уточняется выбором) · Для каменных домов — плита 250 мм в базе</div>
       </div>
-      <div class="header-tag">
-        <span class="header-tag-dot"></span>
-        <span>Онлайн-калькулятор каркасного дома</span>
-      </div>
-    </header>
+    </div>
+    <div class="tag"><span class="dot"></span> EcoCarcass2026 · Онлайн-калькулятор</div>
+  </div>
 
-    <div class="layout">
-      <!-- Левая колонка: пошаговый выбор -->
-      <div class="card">
-        <div class="steps-header">
-          <div class="steps-title">Подбор параметров дома</div>
-          <div class="steps-sub">Выберите тип дома, этажность, утепление, фасад, окна и кровлю — калькулятор посчитает ориентировочную стоимость.</div>
-          <div class="steps-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">Шаг 1 из 4</div>
-          </div>
-        </div>
-
-        <div class="steps">
-          <!-- Шаг 1 -->
-          <div class="step active" data-step="1">
-            <div class="step-label">шаг 1</div>
-            <div class="step-title">Тип дома и этажность</div>
-
-            <div class="field">
-              <label>Тип дома</label>
-              <div class="options-grid" data-group="houseType">
-                <div class="option-card active" data-value="frame">
-                  <div class="option-title">Каркасный дом</div>
-                  <div class="option-sub">Экологичная технология, быстрый монтаж, тёплый контур.</div>
-                  <div class="option-chip green">Рекомендуем</div>
-                </div>
-                <div class="option-card disabled" data-value="brick">
-                  <div class="option-title">Кирпичный дом</div>
-                  <div class="option-sub">Скоро в онлайн-калькуляторе. Рассчитываем пока каркасные дома.</div>
-                  <div class="option-chip">В разработке</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field" style="margin-top: 14px;">
-              <label>Этажность</label>
-              <div class="options-grid" data-group="floors">
-                <div class="option-card active" data-value="1">
-                  <div class="option-title">1 этаж</div>
-                  <div class="option-sub">Комфортный одноэтажный дом без лестниц.</div>
-                  <div class="option-chip green">Популярно</div>
-                </div>
-                <div class="option-card" data-value="2">
-                  <div class="option-title">2 этажа</div>
-                  <div class="option-sub">Больше площади на участке — два полноценных уровня.</div>
-                  <div class="option-chip">+ второй свет</div>
-                </div>
-              </div>
-              <div class="hint">Этажность влияет на конструктив и итоговую стоимость. Коэффициенты можно настроить.</div>
-            </div>
-          </div>
-
-          <!-- Шаг 2 -->
-          <div class="step" data-step="2">
-            <div class="step-label">шаг 2</div>
-            <div class="step-title">Толщина утепления стен</div>
-
-            <div class="options-grid" data-group="insulation">
-              <div class="option-card" data-value="150">
-                <div class="option-title">150 мм</div>
-                <div class="option-sub">Комфортный вариант для сезонного и периодического проживания.</div>
-                <div class="option-chip">эконом</div>
-              </div>
-              <div class="option-card active" data-value="200">
-                <div class="option-title">200 мм</div>
-                <div class="option-sub">Тёплые стены для круглогодичного проживания и сурового климата.</div>
-                <div class="option-chip green">круглогодично</div>
-              </div>
-            </div>
-
-            <div class="hint">
-              В расчёте используется цена за тёплый контур 125&nbsp;м². Значения для 150 и 200&nbsp;мм можно задать в коде.
-            </div>
-          </div>
-
-          <!-- Шаг 3 -->
-          <div class="step" data-step="3">
-            <div class="step-label">шаг 3</div>
-            <div class="step-title">Наружная отделка, окна и кровля</div>
-
-            <div class="field">
-              <label>Наружная отделка стен</label>
-              <div class="options-grid" data-group="exterior">
-                <div class="option-card active" data-value="wood">
-                  <div class="option-title">Деревянная обшивка</div>
-                  <div class="option-sub">Доска / имитация бруса, классический вид тёплого дома.</div>
-                  <div class="option-chip green">база</div>
-                </div>
-                <div class="option-card" data-value="planken">
-                  <div class="option-title">Планкен</div>
-                  <div class="option-sub">Современный горизонтальный или вертикальный рисунок.</div>
-                  <div class="option-chip">+ премиум</div>
-                </div>
-                <div class="option-card" data-value="scandi">
-                  <div class="option-title">Скандинавский профиль</div>
-                  <div class="option-sub">Стиль «сканди» с чистой геометрией фасада.</div>
-                  <div class="option-chip">дизайн</div>
-                </div>
-                <div class="option-card" data-value="metal">
-                  <div class="option-title">Металлический сайдинг</div>
-                  <div class="option-sub">Практичное решение, минимальное обслуживание.</div>
-                  <div class="option-chip">практично</div>
-                </div>
-                <div class="option-card" data-value="hauberk">
-                  <div class="option-title">Плитка TechnoNICOL HAUBERK</div>
-                  <div class="option-sub">Фасад под кирпич/камень, износостойкое покрытие.</div>
-                  <div class="option-chip">премиум</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field" style="margin-top: 14px;">
-              <label>Окна</label>
-              <div class="options-grid" data-group="windows">
-                <div class="option-card active" data-value="white">
-                  <div class="option-title">Белые окна</div>
-                  <div class="option-sub">Классический вариант ПВХ-окон.</div>
-                  <div class="option-chip green">база</div>
-                </div>
-                <div class="option-card" data-value="laminated">
-                  <div class="option-title">Ламинированные окна</div>
-                  <div class="option-sub">Цвет «под дерево» или по каталогу.</div>
-                  <div class="option-chip">+ стоимость</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field" style="margin-top: 14px;">
-              <label>Кровля</label>
-              <div class="options-grid" data-group="roof">
-                <div class="option-card active" data-value="metal_tile">
-                  <div class="option-title">Металлочерепица</div>
-                  <div class="option-sub">Популярное и надёжное решение.</div>
-                  <div class="option-chip green">оптимум</div>
-                </div>
-                <div class="option-card" data-value="prof">
-                  <div class="option-title">Профнастил</div>
-                  <div class="option-sub">Бюджетный и практичный вариант.</div>
-                  <div class="option-chip">эконом</div>
-                </div>
-                <div class="option-card" data-value="click">
-                  <div class="option-title">Клик-фальц</div>
-                  <div class="option-sub">Современный плоский силуэт крыши.</div>
-                  <div class="option-chip">дизайн</div>
-                </div>
-                <div class="option-card" data-value="soft">
-                  <div class="option-title">Мягкая кровля</div>
-                  <div class="option-sub">Тихая крыша, богатая палитра цветов.</div>
-                  <div class="option-chip">премиум</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Шаг 4 -->
-          <div class="step" data-step="4">
-            <div class="step-label">шаг 4</div>
-            <div class="step-title">Площадь и комплектация</div>
-
-            <div class="field">
-              <label for="areaInput">Площадь дома, м²</label>
-              <input type="number" id="areaInput" min="40" max="350" value="125" />
-              <div class="hint">Используем площадь по полу. Террасы и навесы можно заложить отдельным расчётом.</div>
-              <div class="error" id="areaError" style="display:none;">Укажите площадь от 40 до 350 м².</div>
-            </div>
-
-            <div class="field" style="margin-top: 16px;">
-              <label>Комплектация</label>
-              <div class="packages" data-group="package">
-                <div class="pkg active" data-value="warm">
-                  <span>Тёплый контур</span>
-                  <span class="pkg-badge">коробка + окна + кровля</span>
-                </div>
-                <div class="pkg" data-value="warm_engineering">
-                  <span>Контур + инженерия</span>
-                  <span class="pkg-badge">отопление, вода, электрика</span>
-                </div>
-                <div class="pkg" data-value="turnkey">
-                  <span>Под ключ</span>
-                  <span class="pkg-badge">с отделкой</span>
-                </div>
-              </div>
-              <div class="hint">Цены за контур, инженерию и отделку основаны на смете дома 125 м². Все значения можно поменять в коде калькулятора.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="nav-row">
-          <div class="nav-left">
-            <button class="btn btn-ghost" id="prevBtn" onclick="prevStep()" disabled>&larr; Назад</button>
-          </div>
-          <div class="nav-right">
-            <button class="btn btn-ghost" onclick="resetDefaults()">Сбросить</button>
-            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Далее</button>
-          </div>
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="card">
+      <div class="head">
+        <div>
+          <div class="title">Параметры дома</div>
+          <div class="desc">Цены скрыты. Вы видите только конфигурацию и итог по разделам. В конце — расчёт для печати + подарок: скидка 2% “от руководителя”.</div>
         </div>
       </div>
 
-      <!-- Правая колонка: результат -->
-      <div class="card">
-        <div class="result-header">
+      <div class="progress">
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="ptext" id="ptext">Шаг 1 из 5</div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step active" data-step="1">
+        <div class="kicker">Шаг 1</div>
+        <div class="stitle">Тип дома и этажность</div>
+
+        <label>Тип дома</label>
+        <div class="options" data-group="houseType">
+          <div class="opt active" data-value="frame">
+            <div class="t">Каркасный</div><div class="s">Быстро, тепло, лёгкий дом.</div><div class="chip green">Эко</div>
+          </div>
+          <div class="opt" data-value="gasblock">
+            <div class="t">Газоблок 400 мм</div><div class="s">Каменный дом.</div><div class="chip">Камень</div>
+          </div>
+          <div class="opt" data-value="porotherm">
+            <div class="t">Porotherm / кирпич 440 мм</div><div class="s">Каменный дом премиум.</div><div class="chip premium">Премиум</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Этажность</label>
+          <div class="options" data-group="floors">
+            <div class="opt active" data-value="1"><div class="t">1 этаж</div><div class="s">Комфорт без лестницы.</div><div class="chip green">Популярно</div></div>
+            <div class="opt" data-value="2"><div class="t">2 этажа</div><div class="s">Больше площади на участке.</div><div class="chip">Компактно</div></div>
+          </div>
+          <div class="hint">Этажность влияет на оценку площади кровли (приближенно).</div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" data-step="2">
+        <div class="kicker">Шаг 2</div>
+        <div class="stitle">Утепление, площади, террасы, фундамент</div>
+
+        <div id="insulationWrap">
+          <label>Утепление стен (только каркас)</label>
+          <div class="options" data-group="insulation">
+            <div class="opt" data-value="150"><div class="t">150 мм</div><div class="s">Экономный вариант.</div><div class="chip">Эконом</div></div>
+            <div class="opt active" data-value="200"><div class="t">200 мм</div><div class="s">Круглогодично.</div><div class="chip green">Тёплый</div></div>
+          </div>
+        </div>
+
+        <div class="field row2">
           <div>
-            <div class="result-logo">Эко Каркас</div>
-            <div style="font-size:11px; color:var(--text-muted);">Ориентировочная стоимость вашего каркасного дома</div>
+            <label for="area">Жилая площадь дома, м²</label>
+            <input id="area" type="number" min="40" max="500" value="100">
+            <div class="hint">Без террас.</div>
+            <div class="danger" id="areaErr">Введите площадь от 40 до 500 м².</div>
           </div>
-          <div class="result-badge" id="badgeText">База: дом 125 м², утепление 200 мм</div>
-        </div>
-
-        <div class="result-main">
-          <div class="result-total" id="totalPrice">0 ₽</div>
-          <div class="result-perm2" id="pricePerM2">0 ₽ / м²</div>
-        </div>
-
-        <div class="result-row">
-          <span>Тёплый контур</span>
-          <span id="warmPrice">0 ₽</span>
-        </div>
-        <div class="result-row">
-          <span>Инженерные системы</span>
-          <span id="engineeringPrice">0 ₽</span>
-        </div>
-        <div class="result-row">
-          <span>Отделочные работы</span>
-          <span id="finishPrice">0 ₽</span>
-        </div>
-
-        <div class="result-meta">
-          <div>Вы выбрали:</div>
-          <div class="pill-list" id="pillList">
-            <!-- Параметры подставляются скриптом -->
+          <div>
+            <label for="terraceClosed">Терраса закрытая, м²</label>
+            <input id="terraceClosed" type="number" min="0" max="300" value="0">
+            <div class="hint">Учитываем по площади террасы.</div>
           </div>
         </div>
 
-        <div class="result-footer">
-          <p>
-            Расчёт основан на смете каркасного дома площадью <strong>125 м²</strong>.
-            Для точного коммерческого предложения менеджер «Эко Каркас» уточнит планировку, участок и дополнительные опции.
-          </p>
+        <div class="field row2">
+          <div>
+            <label for="terraceOpen">Терраса открытая, м²</label>
+            <input id="terraceOpen" type="number" min="0" max="300" value="0">
+            <div class="hint">Учитываем по площади террасы.</div>
+          </div>
+          <div>
+            <label for="terraceCover">Покрытие террасы</label>
+            <select id="terraceCover">
+              <option value="dpk" selected>ДПК</option>
+              <option value="larch">Лиственница</option>
+            </select>
+            <div class="hint">Покрытие влияет на спецификацию, цену держим в базе террасы.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Фундамент</label>
+          <div id="foundationFrameWrap">
+            <div class="options" data-group="foundation">
+              <div class="opt active" data-value="screw"><div class="t">Винтовые сваи 108×2500</div><div class="s">В базе для каркасного дома.</div><div class="chip green">База</div></div>
+              <div class="opt" data-value="rcpiles"><div class="t">ЖБИ сваи 150×150×3000</div><div class="s">Жёстко и надёжно.</div><div class="chip">Опция</div></div>
+              <div class="opt" data-value="slab300"><div class="t">Монолитная плита 300 мм</div><div class="s">Как опция для каркасного.</div><div class="chip">Опция</div></div>
+            </div>
+            <div class="hint">Для каркасного: сваи в базе, ЖБИ/плита — доп. опции.</div>
+          </div>
+          <div id="foundationStoneHint" class="hint" style="display:none;">
+            Для каменных домов: монолитная плита 250 мм (в базе, без доплат).
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" data-step="3">
+        <div class="kicker">Шаг 3</div>
+        <div class="stitle">Фасад, окна, кровля</div>
+
+        <label>Фасад</label>
+        <div class="options" data-group="exterior">
+          <div class="opt active" data-value="wood"><div class="t">Дерево</div><div class="s">Имитация бруса без окраса.</div><div class="chip green">База</div></div>
+          <div class="opt" data-value="planken"><div class="t">Планкен</div><div class="s">Натуральная доска без шип-паза.</div><div class="chip">Опция</div></div>
+          <div class="opt" data-value="metal"><div class="t">Металлосайдинг</div><div class="s">Сталь с покрытием, минимум ухода.</div><div class="chip">Опция</div></div>
+          <div class="opt" data-value="hauberk"><div class="t">Hauberk</div><div class="s">Гибкая фасадная плитка под кирпич/камень.</div><div class="chip">Опция</div></div>
+        </div>
+
+        <div class="checks">
+          <div class="check" id="paintWrap">
+            <input id="paintWood" type="checkbox">
+            <div>
+              <div class="ct">Окраска фасада (дерево)</div>
+              <div class="cs">Покраска/защита по площади дома</div>
+            </div>
+          </div>
+
+          <div class="check" id="faceBrickWrap" style="display:none;">
+            <input id="faceBrick" type="checkbox">
+            <div>
+              <div class="ct">Фасад: облицовочный кирпич (только каменные)</div>
+              <div class="cs">Облицовка фасада кирпичом</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Окна</label>
+          <div class="options" data-group="windows">
+            <div class="opt active" data-value="white"><div class="t">Белые</div><div class="s">Стандарт.</div><div class="chip green">База</div></div>
+            <div class="opt" data-value="laminated"><div class="t">Ламинированные</div><div class="s">Учитывается по площади дома.</div><div class="chip">Опция</div></div>
+          </div>
+
+          <div class="checks">
+            <div class="check"><input id="portal" type="checkbox"><div><div class="ct">Раздвижной портал</div><div class="cs">Опция комфорта</div></div></div>
+            <div class="check"><input id="mosquito" type="checkbox"><div><div class="ct">Москитные сетки</div><div class="cs">Опция комфорта</div></div></div>
+            <div class="check"><input id="energyGlass" type="checkbox"><div><div class="ct">Энергосберегающие стекла</div><div class="cs">Опция энергоэффективности</div></div></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Кровля</label>
+          <div class="options" data-group="roof">
+            <div class="opt active" data-value="metal_tile"><div class="t">Металлочерепица</div><div class="s">Классика, ремонтопригодная.</div><div class="chip green">Топ</div></div>
+            <div class="opt" data-value="prof"><div class="t">Профнастил</div><div class="s">Практично и бюджетно.</div><div class="chip">Эконом</div></div>
+            <div class="opt" data-value="click"><div class="t">Клик-фальц</div><div class="s">Современный вид.</div><div class="chip">Опция</div></div>
+            <div class="opt" data-value="soft"><div class="t">Мягкая</div><div class="s">Тише под дождём.</div><div class="chip">Опция</div></div>
+          </div>
+
+          <div class="checks">
+            <div class="check"><input id="drainMetal" type="checkbox"><div><div class="ct">Водосточная система Grand Line (металл)</div><div class="cs">Учитывается в итогах по площади кровли</div></div></div>
+            <div class="check"><input id="drainPlastic" type="checkbox"><div><div class="ct">Водосточная система (пластик)</div><div class="cs">Учитывается в итогах по площади кровли</div></div></div>
+            <div class="check"><input id="snow" type="checkbox"><div><div class="ct">Снегозадержатели Grand Line</div><div class="cs">Учитывается в итогах по площади кровли</div></div></div>
+            <div class="check"><input id="soffitMetal" type="checkbox"><div><div class="ct">Подшив свесов: металлический софит</div><div class="cs">Пластиковые софиты — в базе</div></div></div>
+          </div>
+          <div class="hint">Площадь кровли считается приближенно: (площадь дома / этажность) × коэффициент.</div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step" data-step="4">
+        <div class="kicker">Шаг 4</div>
+        <div class="stitle">Инженерия</div>
+        <div class="hint">Выберите нужные разделы. Стоимость считается автоматически.</div>
+
+        <div class="checks">
+          <div class="check"><input id="engHeat" type="checkbox"><div><div class="ct">Отопление</div><div class="cs">Считаем по площади дома</div></div></div>
+          <div class="check"><input id="engWater" type="checkbox"><div><div class="ct">Вода / канализация</div><div class="cs">Считаем по площади дома</div></div></div>
+          <div class="check"><input id="engElectric" type="checkbox"><div><div class="ct">Электрика (черновая)</div><div class="cs">Считаем по площади дома</div></div></div>
+          <div class="check"><input id="engVent" type="checkbox"><div><div class="ct">Вентиляция</div><div class="cs">Считаем по площади дома</div></div></div>
+        </div>
+
+        <div class="field">
+          <label>Инженерные фикс-опции</label>
+          <div class="checks">
+            <div class="check"><input id="ventBase" type="checkbox"><div><div class="ct">Вентиляция база: 3 грибка + 4 клапана</div><div class="cs">Фикс. опция</div></div></div>
+            <div class="check"><input id="cleanElectric" type="checkbox"><div><div class="ct">Чистовая электрика (розетки/свет/выключатели)</div><div class="cs">Фикс. опция</div></div></div>
+            <div class="check"><input id="plumbing" type="checkbox"><div><div class="ct">Сантехника (унитазы/раковины/ванны/кабины/смесители/душ)</div><div class="cs">Фикс. опция</div></div></div>
+            <div class="check"><input id="boilerRoom" type="checkbox"><div><div class="ct">Котельная + косвенный бойлер</div><div class="cs">Фикс. опция</div></div></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Скважина / септик</label>
+          <div class="checks">
+            <div class="check"><input id="septic" type="checkbox"><div><div class="ct">Септик «Кибез-5» под ключ</div><div class="cs">Фикс. опция</div></div></div>
+            <div class="check"><input id="well" type="checkbox"><div><div class="ct">Скважина (40 м с кессоном) под ключ</div><div class="cs">Фикс. опция (с доплатой за глубину)</div></div></div>
+          </div>
+          <div class="field row2">
+            <div><label for="wellDepth">Глубина скважины, м</label><input id="wellDepth" type="number" min="0" value="40"></div>
+            <div><label>&nbsp;</label><button class="btn ghost mini" onclick="recalc()">Пересчитать</button><div class="hint">Считаем автоматически.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step" data-step="5">
+        <div class="kicker">Шаг 5</div>
+        <div class="stitle">Внутренняя отделка (по м²)</div>
+        <div class="hint">Выберите нужные позиции — умножаем на площадь дома.</div>
+        <div class="checks" id="finishList"></div>
+
+        <div class="sep"></div>
+        <div class="badge">🎁 Подарок: скидка 2% “от руководителя” при самостоятельном расчёте</div>
+        <div class="hint" style="margin-top:10px;">Откройте «Расчёт для печати»: КП + перечень выбранных работ.</div>
+      </div>
+
+      <div class="nav">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ghost" id="prev" onclick="prevStep()" disabled>← Назад</button>
+          <button class="btn ghost" onclick="resetAll()">Сбросить расчёт</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ghost" onclick="openPrint()">Расчёт для печати</button>
+          <button class="btn primary" id="next" onclick="nextStep()">Далее</button>
         </div>
       </div>
     </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <div class="rhead">
+        <div>
+          <div class="rbrand">Эко Каркас</div>
+          <div class="sub">Коммерческий расчёт (онлайн)</div>
+        </div>
+      </div>
+
+      <div class="total" id="total">—</div>
+      <div class="perm2" id="perm2">—</div>
+
+      <div class="sep"></div>
+      <div class="line"><span>База дома</span><b id="baseLine">—</b></div>
+      <div class="line"><span>Фундамент</span><b id="foundLine">—</b></div>
+      <div class="line"><span>Фасад</span><b id="extLine">—</b></div>
+      <div class="line"><span>Террасы</span><b id="terrLine">—</b></div>
+      <div class="line"><span>Окна и опции</span><b id="winLine">—</b></div>
+      <div class="line"><span>Кровля и доборы</span><b id="roofLine">—</b></div>
+      <div class="line"><span>Инженерия</span><b id="engLine">—</b></div>
+      <div class="line"><span>Внутренняя отделка</span><b id="finLine">—</b></div>
+
+      <div class="sep"></div>
+      <div class="line"><span>Скидка 2%</span><b id="discLine">—</b></div>
+      <div class="line" style="font-size:14px;"><span>Итого со скидкой</span><b id="finalLine">—</b></div>
+
+      <div class="sep"></div>
+      <div class="pills" id="pills"></div>
+
+      <div class="sep"></div>
+      <div class="footer-note">*Ориентировочный расчёт. Точную смету подтверждаем после планировки, проекта и состава работ.</div>
+    </div>
   </div>
+</div>
 
-  <script>
-    // ===== БАЗА ИЗ СМЕТЫ 125 М² (тёплый контур, инженерия, отделка) =====
-    const REFERENCE_AREA = 125;          // м²
-    const WARM_TOTAL_125 = 8075250;      // тёплый контур
-    const ENGINEERING_TOTAL_125 = 1807500;
-    const FINISH_TOTAL_125 = 4059100;
+<script>
+  // ====== PRICES (hidden from UI, used in calc) ======
+  const BASE_PRICE_PER_M2 = { frame:62000, gasblock:68000, porotherm:85000 };
 
-    // Цена за м² (округлено)
-    const PRICE_WARM_200 = Math.round(WARM_TOTAL_125 / REFERENCE_AREA);            // ~64 602 ₽/м²
-    const PRICE_WARM_150 = PRICE_WARM_200 * 0.93; // <--- сюда можно поставить свою цену для 150 мм
-    const PRICE_ENGINEERING = Math.round(ENGINEERING_TOTAL_125 / REFERENCE_AREA);  // ~14 460 ₽/м²
-    const PRICE_FINISH = Math.round(FINISH_TOTAL_125 / REFERENCE_AREA);            // ~32 473 ₽/м²
+  // terraces
+  const TERRACE_CLOSED_PER_M2 = 25000;
+  const TERRACE_OPEN_PER_M2   = 14000;
 
-    // Коэффициенты по опциям (можешь смело менять под свои реальные цены)
-    const FLOOR_COEFS = {
-      1: 1.00,
-      2: 1.05, // чуть дороже двухэтажный дом
-    };
+  // facade add-ons (per m2 of HOUSE area)
+  const EXTERIOR_ADD = { wood:0, planken:6500, metal:6500, hauberk:5500 };
+  const PAINT_WOOD_PER_M2 = 1500;
 
-    const EXTERIOR_COEFS = {
-      wood: 1.00,      // базовая деревянная обшивка / имитация бруса
-      planken: 1.10,   // немного дороже
-      scandi: 1.12,    // дизайн
-      metal: 0.98,     // немного эконом
-      hauberk: 1.18,   // премиум
-    };
+  // stone-only facade option
+  const FACE_BRICK_ADD_PER_M2 = 11000;
 
-    const WINDOWS_COEFS = {
-      white: 1.00,
-      laminated: 1.12, // ламинация повышает стоимость
-    };
+  // windows
+  const WINDOWS_LAMINATED_ADD_PER_M2 = 5000;
+  const OPT_PORTAL=100000, OPT_MOSQUITO=26000, OPT_ENERGY=54000;
 
-    const ROOF_COEFS = {
-      metal_tile: 1.00,
-      prof: 0.95,
-      click: 1.10,
-      soft: 1.15,
-    };
+  // roof
+  const ROOF_AREA_COEF = {1:1.25,2:1.25};
+  const ROOF_TYPE_COEF = { metal_tile:1.00, prof:0.95, click:1.10, soft:1.12 };
+  const DRAIN_METAL_PER_M2_ROOF=8000, DRAIN_PLASTIC_PER_M2_ROOF=4500, SNOW_PER_M2_ROOF=3500;
+  const SOFFIT_METAL_PER_M2 = 500; // by HOUSE area
 
-    // Состояние выбора
-    const state = {
-      houseType: "frame",
-      floors: 1,
-      insulation: "200",
-      exterior: "wood",
-      windows: "white",
-      roof: "metal_tile",
-      package: "warm",
-      area: REFERENCE_AREA,
-    };
+  // engineering (+25% stays in calculation but hidden in UI)
+  const ENGINEERING_MARKUP=1.25;
+  const VENT_BASE_FIXED=190000, CLEAN_ELECTRIC_FIXED=180000, PLUMBING_FIXED=310000;
+  const BOILER_ROOM_FIXED=260000;
+  const SEPTIC_FIXED=230000, WELL_BASE_40_FIXED=350000, WELL_EXTRA_PER_M=3000;
 
-    let currentStep = 1;
-    const totalSteps = 4;
+  // base engineering per m2 (hidden)
+  const P_HEAT=5500, P_WATER=3500, P_ELECTRIC=4500, P_VENT=0;
 
-    function formatMoney(value) {
-      return value.toLocaleString("ru-RU") + " ₽";
-    }
+  // foundation (frame only)
+  const FOUNDATION_RC_PILES_FIXED=150000;
+  const FOUNDATION_SLAB300_PER_M2=24000;
 
-    function getWarmPricePerM2() {
-      const base =
-        state.insulation === "150" ? PRICE_WARM_150 : PRICE_WARM_200;
+  // interior finish
+  const FINISH_ITEMS = [
+    { id:"fin1", title:"Отделка стен ГКЛ без шпаклевки и окраса", per_m2:2500 },
+    { id:"fin2", title:"Отделка стен ГКЛ со стеклохолстом, шпаклевкой и окрасом", per_m2:12000 },
+    { id:"fin3", title:"Отделка стен ЛГКЛ ламинированный", per_m2:5500 },
+    { id:"fin4", title:"Отделка стен крашеной на заводе имитацией бруса", per_m2:9500 },
+    { id:"fin5", title:"Керамогранит санузел / ванна", per_m2:3500 },
+    { id:"fin6", title:"Откосы оконные", per_m2:1000 },
+    { id:"fin8", title:"Укладка кварц-винила с материалом", per_m2:3900 },
+    { id:"fin9", title:"Монтаж плинтуса с материалом", per_m2:500 },
+    { id:"fin10", title:"Монтаж дверных полотен с материалом", per_m2:2500 },
+    { id:"fin11", title:"Натяжные потолки белые матовые", per_m2:3000 },
+  ];
 
-      const floorCoef = FLOOR_COEFS[state.floors] || 1;
-      const exteriorCoef = EXTERIOR_COEFS[state.exterior] || 1;
-      const windowsCoef = WINDOWS_COEFS[state.windows] || 1;
-      const roofCoef = ROOF_COEFS[state.roof] || 1;
+  // ====== STATE ======
+  const state = {
+    houseType:"frame", floors:1, insulation:"200",
+    area:100, terraceClosed:0, terraceOpen:0, terraceCover:"dpk",
+    foundation:"screw",
+    exterior:"wood", paintWood:false, faceBrick:false,
+    windows:"white",
+    roof:"metal_tile", drainMetal:false, drainPlastic:false, snow:false, soffitMetal:false,
+    portal:false, mosquito:false, energyGlass:false,
+    engHeat:false, engWater:false, engElectric:false, engVent:false,
+    ventBase:false, cleanElectric:false, plumbing:false, boilerRoom:false,
+    septic:false, well:false, wellDepth:40,
+    finish:{}
+  };
 
-      // Общий коэффициент по отделке + конструктиву
-      const totalCoef = floorCoef * exteriorCoef * windowsCoef * roofCoef;
+  let step=1; const stepsTotal=5;
 
-      return Math.round(base * totalCoef);
-    }
+  // build finish list
+  const finishList = document.getElementById("finishList");
+  FINISH_ITEMS.forEach(it=>{
+    const row=document.createElement("div");
+    row.className="check";
+    row.innerHTML = `<input type="checkbox" id="${it.id}"><div><div class="ct">${it.title}</div><div class="cs">Учитываем по площади</div></div>`;
+    finishList.appendChild(row);
+    state.finish[it.id]=false;
+  });
 
-    function calculate() {
-      const areaInput = document.getElementById("areaInput");
-      let area = parseFloat((areaInput.value || "").toString().replace(",", "."));
+  // ====== HELPERS ======
+  function money(x){return Math.round(x).toLocaleString("ru-RU")+" ₽";}
+  function clampNum(v,min,max){ if(isNaN(v)) return min; return Math.max(min,Math.min(max,v)); }
 
-      if (isNaN(area)) {
-        area = REFERENCE_AREA;
-      }
+  function getRoofArea(){
+    const base = state.area / state.floors;
+    const coef = ROOF_AREA_COEF[state.floors] ?? 1.25;
+    const typeCoef = ROOF_TYPE_COEF[state.roof] ?? 1;
+    return base * coef * typeCoef;
+  }
 
-      state.area = area;
+  function readInputs(){
+    state.area = parseFloat((document.getElementById("area").value||"").replace(",", "."));
+    state.terraceClosed = parseFloat((document.getElementById("terraceClosed").value||"0").replace(",", "."));
+    state.terraceOpen   = parseFloat((document.getElementById("terraceOpen").value||"0").replace(",", "."));
+    state.terraceCover  = document.getElementById("terraceCover").value;
 
-      const warmPerM2 = getWarmPricePerM2();
-      let warmTotal = warmPerM2 * area;
+    state.paintWood = document.getElementById("paintWood").checked;
+    state.faceBrick = document.getElementById("faceBrick").checked;
 
-      let engPerM2 = 0;
-      let finishPerM2 = 0;
+    state.portal = document.getElementById("portal").checked;
+    state.mosquito = document.getElementById("mosquito").checked;
+    state.energyGlass = document.getElementById("energyGlass").checked;
 
-      if (state.package === "warm_engineering" || state.package === "turnkey") {
-        engPerM2 = PRICE_ENGINEERING;
-      }
-      if (state.package === "turnkey") {
-        finishPerM2 = PRICE_FINISH;
-      }
+    state.drainMetal = document.getElementById("drainMetal").checked;
+    state.drainPlastic = document.getElementById("drainPlastic").checked;
+    state.snow = document.getElementById("snow").checked;
+    state.soffitMetal = document.getElementById("soffitMetal").checked;
 
-      const engTotal = Math.round(engPerM2 * area);
-      const finishTotal = Math.round(finishPerM2 * area);
+    state.engHeat = document.getElementById("engHeat").checked;
+    state.engWater = document.getElementById("engWater").checked;
+    state.engElectric = document.getElementById("engElectric").checked;
+    state.engVent = document.getElementById("engVent").checked;
 
-      const total = Math.round(warmTotal + engTotal + finishTotal);
-      const pricePerM2 = total > 0 && area > 0 ? Math.round(total / area) : 0;
+    state.ventBase = document.getElementById("ventBase").checked;
+    state.cleanElectric = document.getElementById("cleanElectric").checked;
+    state.plumbing = document.getElementById("plumbing").checked;
+    state.boilerRoom = document.getElementById("boilerRoom").checked;
 
-      document.getElementById("totalPrice").textContent =
-        total > 0 ? formatMoney(total) : "—";
-      document.getElementById("pricePerM2").textContent =
-        pricePerM2 > 0 ? formatMoney(pricePerM2) + " / м²" : "—";
+    state.septic = document.getElementById("septic").checked;
+    state.well = document.getElementById("well").checked;
+    state.wellDepth = parseFloat((document.getElementById("wellDepth").value||"0").replace(",", "."));
 
-      document.getElementById("warmPrice").textContent =
-        warmTotal > 0 ? formatMoney(Math.round(warmTotal)) : "—";
-      document.getElementById("engineeringPrice").textContent =
-        engTotal > 0 ? formatMoney(engTotal) : "—";
-      document.getElementById("finishPrice").textContent =
-        finishTotal > 0 ? formatMoney(finishTotal) : "—";
+    FINISH_ITEMS.forEach(it => state.finish[it.id] = document.getElementById(it.id).checked);
+  }
 
-      const badge = document.getElementById("badgeText");
-      badge.textContent = `База: дом ${REFERENCE_AREA} м², утепление ${state.insulation} мм`;
+  function validateArea(){
+    const err=document.getElementById("areaErr");
+    if(isNaN(state.area)||state.area<40||state.area>500){ err.style.display="block"; return false; }
+    err.style.display="none"; return true;
+  }
 
-      updatePills();
-    }
+  function applyHouseTypeRules(){
+    const isFrame = state.houseType === "frame";
 
-    function updatePills() {
-      const pills = [];
-      const houseTypeText =
-        state.houseType === "frame" ? "Каркасный дом" : "Кирпичный дом";
-      const floorsText =
-        state.floors === 1 ? "1 этаж" : "2 этажа";
+    document.getElementById("insulationWrap").style.display = isFrame ? "" : "none";
 
-      const extMap = {
-        wood: "Деревянная обшивка",
-        planken: "Планкен",
-        scandi: "Скандинавский профиль",
-        metal: "Металлический сайдинг",
-        hauberk: "Плитка TechnoNICOL HAUBERK",
-      };
-      const winMap = {
-        white: "Белые окна",
-        laminated: "Ламинированные окна",
-      };
-      const roofMap = {
-        metal_tile: "Металлочерепица",
-        prof: "Профнастил",
-        click: "Клик-фальц",
-        soft: "Мягкая кровля",
-      };
-      const pkgMap = {
-        warm: "Тёплый контур",
-        warm_engineering: "Контур + инженерия",
-        turnkey: "Под ключ",
-      };
-
-      pills.push(houseTypeText);
-      pills.push(floorsText);
-      pills.push(`Утепление ${state.insulation} мм`);
-      pills.push(extMap[state.exterior] || "");
-      pills.push(winMap[state.windows] || "");
-      pills.push(roofMap[state.roof] || "");
-      pills.push(pkgMap[state.package] || "");
-      if (state.area) {
-        pills.push(`${state.area} м²`);
-      }
-
-      const pillList = document.getElementById("pillList");
-      pillList.innerHTML = "";
-      pills.filter(Boolean).forEach((text, idx) => {
-        const span = document.createElement("span");
-        span.className = "pill" + (idx < 3 ? " green" : "");
-        span.textContent = text;
-        pillList.appendChild(span);
-      });
-    }
-
-    function showStep(step) {
-      currentStep = step;
-      const steps = document.querySelectorAll(".step");
-      steps.forEach((el) => {
-        el.classList.toggle("active", Number(el.dataset.step) === step);
-      });
-
-      const progress = document.getElementById("progressFill");
-      const progressText = document.getElementById("progressText");
-      const percent = (step / totalSteps) * 100;
-      progress.style.width = percent + "%";
-      progressText.textContent = `Шаг ${step} из ${totalSteps}`;
-
-      const prevBtn = document.getElementById("prevBtn");
-      const nextBtn = document.getElementById("nextBtn");
-
-      prevBtn.disabled = step === 1;
-      if (step < totalSteps) {
-        nextBtn.textContent = "Далее";
-      } else {
-        nextBtn.textContent = "Рассчитать";
+    document.getElementById("foundationFrameWrap").style.display = isFrame ? "" : "none";
+    document.getElementById("foundationStoneHint").style.display = isFrame ? "none" : "";
+    if(!isFrame){
+      state.foundation = "slab250";
+      document.querySelectorAll("[data-group='foundation'] .opt").forEach(x=>x.classList.remove("active"));
+    } else {
+      if(state.foundation==="slab250") state.foundation="screw";
+      const cur = document.querySelector(`[data-group='foundation'] .opt[data-value='${state.foundation}']`);
+      if(cur){
+        document.querySelectorAll("[data-group='foundation'] .opt").forEach(x=>x.classList.remove("active"));
+        cur.classList.add("active");
       }
     }
 
-    function nextStep() {
-      if (currentStep === totalSteps) {
-        // последний шаг — считаем
-        if (!validateArea()) return;
-        calculate();
-        return;
-      }
-      if (currentStep === 4 && !validateArea()) {
-        return;
-      }
-      showStep(Math.min(totalSteps, currentStep + 1));
+    document.getElementById("faceBrickWrap").style.display = isFrame ? "none" : "";
+    if(isFrame) document.getElementById("faceBrick").checked = false;
+
+    const canPaint = isFrame && state.exterior==="wood";
+    document.getElementById("paintWrap").style.display = canPaint ? "" : "none";
+    if(!canPaint) document.getElementById("paintWood").checked = false;
+
+    const header = document.getElementById("foundationHeader");
+    header.textContent = isFrame
+      ? "Фундамент: выбирается (сваи/ЖБИ/плита 300) · Для каменных домов — плита 250 мм в базе"
+      : "Фундамент: монолитная плита 250 мм (в базе, без доплат)";
+  }
+
+  function updatePills(roofArea){
+    const typeMap={frame:"Каркасный",gasblock:"Газоблок 400 мм",porotherm:"Porotherm/кирпич 440 мм"};
+    const mapExt={wood:"Фасад: дерево (имитация бруса)",planken:"Фасад: планкен",metal:"Фасад: металлосайдинг",hauberk:"Фасад: Hauberk"};
+    const mapRoof={metal_tile:"Кровля: металлочерепица",prof:"Кровля: профнастил",click:"Кровля: клик-фальц",soft:"Кровля: мягкая"};
+    const mapWin={white:"Окна: белые",laminated:"Окна: ламинированные"};
+
+    const pills=[];
+    pills.push(typeMap[state.houseType]||"Дом");
+    pills.push(state.floors===1?"1 этаж":"2 этажа");
+    if(state.houseType==="frame") pills.push("Утепление "+state.insulation+" мм");
+    if(state.houseType==="frame"){
+      const fMap={screw:"Фундамент: винтовые сваи",rcpiles:"Фундамент: ЖБИ сваи",slab300:"Фундамент: плита 300 мм"};
+      pills.push(fMap[state.foundation]||"Фундамент: винтовые сваи");
+    } else {
+      pills.push("Фундамент: плита 250 мм (в базе)");
+    }
+    pills.push(mapExt[state.exterior]||"");
+    if(document.getElementById("paintWood").checked) pills.push("Окраска фасада");
+    if(state.houseType!=="frame" && document.getElementById("faceBrick").checked) pills.push("Облицовочный кирпич");
+    pills.push(mapWin[state.windows]||"");
+    pills.push(mapRoof[state.roof]||"");
+    pills.push(state.area+" м²");
+    if(state.terraceClosed>0) pills.push("Терраса закрытая: "+state.terraceClosed+" м²");
+    if(state.terraceOpen>0) pills.push("Терраса открытая: "+state.terraceOpen+" м²");
+    pills.push("Кровля ~ "+Math.round(roofArea)+" м²");
+
+    const wrap=document.getElementById("pills");
+    wrap.innerHTML="";
+    pills.filter(Boolean).forEach((t,i)=>{
+      const el=document.createElement("span");
+      el.className="pill"+(i<3?" green":"");
+      el.textContent=t;
+      wrap.appendChild(el);
+    });
+  }
+
+  // ====== CALC ======
+  function calc(){
+    readInputs();
+    if(!validateArea()) state.area = clampNum(state.area,40,500);
+
+    const area = state.area;
+
+    const basePerM2 = BASE_PRICE_PER_M2[state.houseType] ?? BASE_PRICE_PER_M2.frame;
+    const base = area * basePerM2;
+
+    let foundation = 0;
+    if(state.houseType === "frame"){
+      if(state.foundation === "rcpiles") foundation = FOUNDATION_RC_PILES_FIXED;
+      if(state.foundation === "slab300") foundation = area * FOUNDATION_SLAB300_PER_M2;
     }
 
-    function prevStep() {
-      if (currentStep > 1) {
-        showStep(currentStep - 1);
-      }
+    let ext = (EXTERIOR_ADD[state.exterior] ?? 0) * area;
+    if(state.houseType !== "frame" && document.getElementById("faceBrick").checked){
+      ext += FACE_BRICK_ADD_PER_M2 * area;
+    }
+    if(state.houseType==="frame" && state.exterior==="wood" && document.getElementById("paintWood").checked){
+      ext += area * PAINT_WOOD_PER_M2;
     }
 
-    function validateArea() {
-      const input = document.getElementById("areaInput");
-      const err = document.getElementById("areaError");
-      let area = parseFloat((input.value || "").toString().replace(",", "."));
-      if (isNaN(area) || area < 40 || area > 350) {
-        err.style.display = "block";
-        return false;
-      }
-      err.style.display = "none";
-      state.area = area;
-      return true;
+    const terrace = (state.terraceClosed * TERRACE_CLOSED_PER_M2) + (state.terraceOpen * TERRACE_OPEN_PER_M2);
+
+    const winLam = (state.windows==="laminated") ? (area * WINDOWS_LAMINATED_ADD_PER_M2) : 0;
+    const winOpts = (state.portal?OPT_PORTAL:0) + (state.mosquito?OPT_MOSQUITO:0) + (state.energyGlass?OPT_ENERGY:0);
+    const windows = winLam + winOpts;
+
+    const roofArea = getRoofArea();
+    let roofExtras =
+      (state.drainMetal ? roofArea * DRAIN_METAL_PER_M2_ROOF : 0) +
+      (state.drainPlastic ? roofArea * DRAIN_PLASTIC_PER_M2_ROOF : 0) +
+      (state.snow ? roofArea * SNOW_PER_M2_ROOF : 0);
+    if(state.soffitMetal) roofExtras += area * SOFFIT_METAL_PER_M2;
+
+    // engineering (per-m2 prices hidden)
+    let eng = 0;
+    if(state.engHeat) eng += area * P_HEAT;
+    if(state.engWater) eng += area * P_WATER;
+    if(state.engElectric) eng += area * P_ELECTRIC;
+    if(state.engVent) eng += area * P_VENT;
+
+    let engFixed = 0;
+    if(state.ventBase) engFixed += VENT_BASE_FIXED;
+    if(state.cleanElectric) engFixed += CLEAN_ELECTRIC_FIXED;
+    if(state.plumbing) engFixed += PLUMBING_FIXED;
+    if(state.boilerRoom) engFixed += BOILER_ROOM_FIXED;
+    if(state.septic) engFixed += SEPTIC_FIXED;
+    if(state.well){
+      const depth = Math.max(0, state.wellDepth || 0);
+      const extra = Math.max(0, depth - 40) * WELL_EXTRA_PER_M;
+      engFixed += WELL_BASE_40_FIXED + extra;
     }
+    eng = (eng + engFixed) * ENGINEERING_MARKUP;
 
-    function resetDefaults() {
-      // Тип дома
-      state.houseType = "frame";
-      // Этажность
-      state.floors = 1;
-      // Утепление
-      state.insulation = "200";
-      // Отделка/окна/кровля
-      state.exterior = "wood";
-      state.windows = "white";
-      state.roof = "metal_tile";
-      // Комплектация
-      state.package = "warm";
-      // Площадь
-      state.area = REFERENCE_AREA;
-      document.getElementById("areaInput").value = REFERENCE_AREA;
-      document.getElementById("areaError").style.display = "none";
-
-      // Сброс визуальных выборов
-      document
-        .querySelectorAll(".option-card, .pkg")
-        .forEach((el) => el.classList.remove("active"));
-      document
-        .querySelector('.options-grid[data-group="houseType"] .option-card[data-value="frame"]')
-        .classList.add("active");
-      document
-        .querySelector('.options-grid[data-group="floors"] .option-card[data-value="1"]')
-        .classList.add("active");
-      document
-        .querySelector('.options-grid[data-group="insulation"] .option-card[data-value="200"]')
-        .classList.add("active");
-      document
-        .querySelector('.options-grid[data-group="exterior"] .option-card[data-value="wood"]')
-        .classList.add("active");
-      document
-        .querySelector('.options-grid[data-group="windows"] .option-card[data-value="white"]')
-        .classList.add("active");
-      document
-        .querySelector('.options-grid[data-group="roof"] .option-card[data-value="metal_tile"]')
-        .classList.add("active");
-      document
-        .querySelector('.packages[data-group="package"] .pkg[data-value="warm"]')
-        .classList.add("active");
-
-      showStep(1);
-      calculate();
-    }
-
-    // Делегирование кликов по карточкам
-    document.addEventListener("click", (e) => {
-      const card = e.target.closest(".option-card");
-      if (card && card.closest("[data-group]")) {
-        if (card.classList.contains("disabled")) return;
-        const group = card.closest("[data-group]").dataset.group;
-        const value = card.dataset.value;
-
-        card
-          .closest("[data-group]")
-          .querySelectorAll(".option-card")
-          .forEach((el) => el.classList.remove("active"));
-        card.classList.add("active");
-
-        if (group === "houseType") state.houseType = value;
-        if (group === "floors") state.floors = Number(value);
-        if (group === "insulation") state.insulation = value;
-        if (group === "exterior") state.exterior = value;
-        if (group === "windows") state.windows = value;
-        if (group === "roof") state.roof = value;
-
-        calculate();
-      }
-
-      const pkg = e.target.closest(".pkg");
-      if (pkg && pkg.closest("[data-group='package']")) {
-        const group = pkg.closest("[data-group='package']");
-        group.querySelectorAll(".pkg").forEach((el) => el.classList.remove("active"));
-        pkg.classList.add("active");
-        state.package = pkg.dataset.value;
-        calculate();
-      }
+    let fin = 0;
+    FINISH_ITEMS.forEach(it=>{
+      if(state.finish[it.id]) fin += area * it.per_m2;
     });
 
-    // Стартовые значения
-    resetDefaults();
-  </script>
+    const subtotal = base + foundation + ext + terrace + windows + roofExtras + eng + fin;
+    const discount = subtotal * 0.02;
+    const total = subtotal - discount;
+    const perM2 = total / area;
+
+    document.getElementById("total").textContent = money(total);
+    document.getElementById("perm2").textContent = money(perM2) + " / м² (по жилой площади)";
+
+    document.getElementById("baseLine").textContent = money(base);
+    document.getElementById("foundLine").textContent = money(foundation);
+    document.getElementById("extLine").textContent = money(ext);
+    document.getElementById("terrLine").textContent = money(terrace);
+    document.getElementById("winLine").textContent = money(windows);
+    document.getElementById("roofLine").textContent = money(roofExtras);
+    document.getElementById("engLine").textContent = money(eng);
+    document.getElementById("finLine").textContent = money(fin);
+
+    document.getElementById("discLine").textContent = "− " + money(discount);
+    document.getElementById("finalLine").textContent = money(total);
+
+    updatePills(roofArea);
+  }
+
+  // ====== STEPS ======
+  function showStep(n){
+    step=n;
+    document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",Number(s.dataset.step)===n));
+    document.getElementById("prev").disabled = (n===1);
+    document.getElementById("next").textContent = (n===stepsTotal) ? "Готово" : "Далее";
+    document.getElementById("fill").style.width = (n/stepsTotal*100)+"%";
+    document.getElementById("ptext").textContent = `Шаг ${n} из ${stepsTotal}`;
+  }
+  function nextStep(){ if(step===2||step===5){readInputs();validateArea();} showStep(Math.min(stepsTotal,step+1)); applyHouseTypeRules(); calc(); }
+  function prevStep(){ showStep(Math.max(1,step-1)); applyHouseTypeRules(); calc(); }
+  function recalc(){ applyHouseTypeRules(); calc(); }
+
+  // ====== RESET ======
+  function resetAll(){
+    state.houseType="frame"; state.floors=1; state.insulation="200";
+    state.area=100; state.terraceClosed=0; state.terraceOpen=0; state.terraceCover="dpk";
+    state.foundation="screw";
+    state.exterior="wood"; state.paintWood=false; state.faceBrick=false;
+    state.windows="white"; state.roof="metal_tile";
+    state.drainMetal=false; state.drainPlastic=false; state.snow=false; state.soffitMetal=false;
+    state.portal=false; state.mosquito=false; state.energyGlass=false;
+    state.engHeat=false; state.engWater=false; state.engElectric=false; state.engVent=false;
+    state.ventBase=false; state.cleanElectric=false; state.plumbing=false; state.boilerRoom=false;
+    state.septic=false; state.well=false; state.wellDepth=40;
+
+    document.getElementById("area").value=100;
+    document.getElementById("terraceClosed").value=0;
+    document.getElementById("terraceOpen").value=0;
+    document.getElementById("terraceCover").value="dpk";
+
+    document.getElementById("paintWood").checked=false;
+    document.getElementById("faceBrick").checked=false;
+
+    ["portal","mosquito","energyGlass","drainMetal","drainPlastic","snow","soffitMetal",
+     "engHeat","engWater","engElectric","engVent",
+     "ventBase","cleanElectric","plumbing","boilerRoom","septic","well"
+    ].forEach(id=>document.getElementById(id).checked=false);
+
+    document.getElementById("wellDepth").value=40;
+
+    FINISH_ITEMS.forEach(it=>document.getElementById(it.id).checked=false);
+
+    document.querySelectorAll("[data-group] .opt").forEach(x=>x.classList.remove("active"));
+    document.querySelector("[data-group='houseType'] .opt[data-value='frame']").classList.add("active");
+    document.querySelector("[data-group='floors'] .opt[data-value='1']").classList.add("active");
+    document.querySelector("[data-group='insulation'] .opt[data-value='200']").classList.add("active");
+    document.querySelector("[data-group='foundation'] .opt[data-value='screw']").classList.add("active");
+    document.querySelector("[data-group='exterior'] .opt[data-value='wood']").classList.add("active");
+    document.querySelector("[data-group='windows'] .opt[data-value='white']").classList.add("active");
+    document.querySelector("[data-group='roof'] .opt[data-value='metal_tile']").classList.add("active");
+
+    showStep(1);
+    applyHouseTypeRules();
+    calc();
+  }
+
+  // ====== PRINT WINDOW (KP) ======
+  function openPrint(){
+    calc(); readInputs();
+    const roofArea = getRoofArea();
+    const typeMap={frame:"Каркасный",gasblock:"Газоблок 400 мм",porotherm:"Porotherm/кирпич 440 мм"};
+    const fMap={screw:"Винтовые сваи 108×2500 (в базе)",rcpiles:"ЖБИ сваи 150×150×3000",slab300:"Монолитная плита 300 мм"};
+
+    const selections = [
+      {k:"Тип дома", v:typeMap[state.houseType]||"Дом"},
+      {k:"Этажность", v:state.floors===1?"1 этаж":"2 этажа"},
+      ...(state.houseType==="frame" ? [{k:"Утепление", v:state.insulation+" мм"}] : []),
+      {k:"Площадь дома", v:state.area+" м²"},
+      {k:"Терраса закрытая", v:state.terraceClosed+" м²"},
+      {k:"Терраса открытая", v:state.terraceOpen+" м²"},
+      {k:"Покрытие террасы", v:(state.terraceCover==="dpk"?"ДПК":"Лиственница")},
+      {k:"Фундамент", v:(state.houseType==="frame" ? (fMap[state.foundation]||fMap.screw) : "Монолитная плита 250 мм (в базе)")},
+      {k:"Площадь кровли (оценка)", v:Math.round(roofArea)+" м²"}
+    ];
+
+    const extras=[];
+    const pushIf=(id,name)=>{ if(document.getElementById(id).checked) extras.push(name); };
+    pushIf("paintWood","Окраска фасада (дерево)");
+    if(state.houseType!=="frame") pushIf("faceBrick","Облицовочный кирпич");
+    pushIf("portal","Раздвижной портал");
+    pushIf("mosquito","Москитные сетки");
+    pushIf("energyGlass","Энергосберегающие стекла");
+    pushIf("drainMetal","Водосток Grand Line (металл)");
+    pushIf("drainPlastic","Водосток (пластик)");
+    pushIf("snow","Снегозадержатели");
+    pushIf("soffitMetal","Подшив свесов: металлический софит");
+    pushIf("ventBase","Вентиляция база (3 грибка + 4 клапана)");
+    pushIf("cleanElectric","Чистовая электрика");
+    pushIf("plumbing","Сантехника");
+    pushIf("boilerRoom","Котельная + косвенный бойлер");
+    pushIf("septic","Септик Кибез-5");
+    pushIf("well","Скважина + кессон");
+
+    const finSel = FINISH_ITEMS.filter(it=>document.getElementById(it.id).checked).map(it=>it.title);
+
+    const baseLine=document.getElementById("baseLine").textContent;
+    const foundLine=document.getElementById("foundLine").textContent;
+    const extLine=document.getElementById("extLine").textContent;
+    const terrLine=document.getElementById("terrLine").textContent;
+    const winLine=document.getElementById("winLine").textContent;
+    const roofLine=document.getElementById("roofLine").textContent;
+    const engLine=document.getElementById("engLine").textContent;
+    const finLine=document.getElementById("finLine").textContent;
+    const discLine=document.getElementById("discLine").textContent;
+    const finalLine=document.getElementById("finalLine").textContent;
+
+    const stamp=new Date().toLocaleString("ru-RU");
+    const w=window.open("","_blank","width=980,height=720");
+    w.document.write(`<!doctype html><html lang="ru"><head><meta charset="utf-8">
+      <title>Коммерческое предложение — Эко Каркас</title>
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+      <style>
+        body{font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:24px;color:#0f172a;}
+        h2{margin:0 0 6px;font-size:22px;letter-spacing:.02em;text-transform:uppercase;font-weight:800;}
+        .sub{color:#64748b;font-size:12px;margin-bottom:16px;}
+        .box{border:1px solid #e6ebef;border-radius:14px;padding:14px;margin-bottom:14px;}
+        table{width:100%;border-collapse:collapse;font-size:13px;}
+        td{padding:8px 6px;border-bottom:1px dashed #e6ebef;vertical-align:top;}
+        td:first-child{color:#334155;font-weight:800;width:56%;}
+        .tot{font-size:20px;font-weight:900;}
+        .green{background:#dcfce7;border:1px solid rgba(34,197,94,.35);padding:10px 12px;border-radius:12px;}
+        ul{margin:8px 0 0 18px;color:#334155;}
+        .btns{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;}
+        button{border:none;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;}
+        .p{background:linear-gradient(135deg,#7ed957,#39b54a);color:#fff;}
+        .g{background:#f1f5f9;color:#0f172a;}
+        @media print {.btns{display:none;} body{margin:0;}}
+      </style></head><body>
+      <h2>Эко Каркас — расчёт стоимости</h2>
+      <div class="sub">Сформировано: ${stamp} · подарок: скидка 2% “от руководителя” за самостоятельный расчёт</div>
+
+      <div class="box"><b>Параметры</b>
+        <table>${selections.map(x=>`<tr><td>${x.k}</td><td>${x.v}</td></tr>`).join("")}</table>
+        ${extras.length?`<div style="margin-top:10px;"><b>Опции:</b><ul>${extras.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
+        ${finSel.length?`<div style="margin-top:10px;"><b>Внутренняя отделка:</b><ul>${finSel.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
+      </div>
+
+      <div class="box"><b>Смета (по пунктам)</b>
+        <table>
+          <tr><td>База дома</td><td>${baseLine}</td></tr>
+          <tr><td>Фундамент</td><td>${foundLine}</td></tr>
+          <tr><td>Фасад</td><td>${extLine}</td></tr>
+          <tr><td>Террасы</td><td>${terrLine}</td></tr>
+          <tr><td>Окна и опции</td><td>${winLine}</td></tr>
+          <tr><td>Кровля и доборы</td><td>${roofLine}</td></tr>
+          <tr><td>Инженерия</td><td>${engLine}</td></tr>
+          <tr><td>Внутренняя отделка</td><td>${finLine}</td></tr>
+          <tr><td>Скидка 2%</td><td>${discLine}</td></tr>
+          <tr><td class="tot">Итого со скидкой</td><td class="tot">${finalLine}</td></tr>
+        </table>
+      </div>
+
+      <div class="green"><b>Подарок:</b> скидка 2% при самостоятельном расчёте на сайте.<br><span style="color:#166534;font-weight:800;">Для точной сметы подтвердим планировку и состав работ.</span></div>
+      <div class="btns"><button class="p" onclick="window.print()">Печать / PDF</button><button class="g" onclick="window.close()">Закрыть</button></div>
+    </body></html>`);
+    w.document.close();
+  }
+
+  // ====== EVENTS ======
+  document.addEventListener("click",(e)=>{
+    const opt=e.target.closest(".opt");
+    const group=opt?.closest("[data-group]")?.dataset.group;
+    if(opt && group){
+      opt.closest("[data-group]").querySelectorAll(".opt").forEach(x=>x.classList.remove("active"));
+      opt.classList.add("active");
+      const val=opt.dataset.value;
+
+      if(group==="houseType") state.houseType=val;
+      if(group==="floors") state.floors=Number(val);
+      if(group==="insulation") state.insulation=val;
+      if(group==="foundation") state.foundation=val;
+      if(group==="exterior") state.exterior=val;
+      if(group==="windows") state.windows=val;
+      if(group==="roof") state.roof=val;
+
+      applyHouseTypeRules();
+      calc();
+    }
+  });
+
+  document.addEventListener("input",(e)=>{
+    if(["area","terraceClosed","terraceOpen","wellDepth"].includes(e.target.id)){
+      applyHouseTypeRules();
+      calc();
+    }
+  });
+
+  document.addEventListener("change",(e)=>{
+    if(e.target.matches("input[type='checkbox'], select")){
+      applyHouseTypeRules();
+      calc();
+    }
+  });
+
+  // init
+  showStep(1);
+  applyHouseTypeRules();
+  calc();
+</script>
 </body>
 </html>
